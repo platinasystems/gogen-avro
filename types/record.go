@@ -3,7 +3,7 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/actgardner/gogen-avro/generator"
+	"github.com/gregorycallea/gogen-avro/generator"
 	"strconv"
 )
 
@@ -214,7 +214,7 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool, json
 		}
 
 		if containers {
-			p.AddImport(r.filename(), "github.com/actgardner/gogen-avro/container")
+			p.AddImport(r.filename(), "github.com/gregorycallea/gogen-avro/container")
 			p.AddFunction(r.filename(), "", r.recordWriterMethod(), r.recordWriterMethodDef())
 		}
 
