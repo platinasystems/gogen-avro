@@ -16,10 +16,11 @@ func main() {
 	packageName := flag.String("package", "avro", "Name of generated package")
 	containers := flag.Bool("containers", false, "Whether to generate container writer methods")
 	shortUnions := flag.Bool("short-unions", false, "Whether to use shorter names for Union types")
+	jsonAnnotations := flag.Bool("json-annotations", false, "Whether to associate json annotation on struct fields")
 
 	flag.Parse()
 	if flag.NArg() < 2 {
-		fmt.Fprintf(os.Stderr, "Usage: gogen-avro [--short-unions] [--package=<package name>] [--containers] <target directory> <schema files>\n")
+		fmt.Fprintf(os.Stderr, "Usage: gogen-avro [--short-unions] [--json-annotations] [--package=<package name>] [--containers] <target directory> <schema files>\n")
 		os.Exit(1)
 	}
 
@@ -44,7 +45,7 @@ func main() {
 		}
 	}
 
-	err = namespace.AddToPackage(pkg, codegenComment(files), *containers)
+	err = namespace.AddToPackage(pkg, codegenComment(files), *containers, *jsonAnnotations)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error generating code for schema - %v\n", err)
 		os.Exit(4)

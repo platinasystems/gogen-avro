@@ -91,13 +91,17 @@ func (r *RecordDefinition) Aliases() []QualifiedName {
 	return r.aliases
 }
 
-func (r *RecordDefinition) structFields() string {
+func (r *RecordDefinition) structFields(jsonAnnotations bool) string {
 	var fieldDefinitions string
 	for _, f := range r.fields {
 		if f.Doc() != "" {
 			fieldDefinitions += fmt.Sprintf("\n// %v\n", f.Doc())
 		}
-		fieldDefinitions += fmt.Sprintf("%v %v\n", f.GoName(), f.Type().GoType())
+		var annotations = ""
+		if jsonAnnotations {
+			annotations = "`json:" + f.avroName + "`"
+		}
+		fieldDefinitions += fmt.Sprintf("%v %v %v\n", f.GoName(), f.Type().GoType(), annotations)
 	}
 	return fieldDefinitions
 }
@@ -118,12 +122,12 @@ func (r *RecordDefinition) fieldDeserializers() string {
 	return deserializerMethods
 }
 
-func (r *RecordDefinition) structDefinition() string {
+func (r *RecordDefinition) structDefinition(jsonAnnotations bool) string {
 	var doc string
 	if r.doc != "" {
 		doc = fmt.Sprintf("// %v", r.doc)
 	}
-	return fmt.Sprintf(recordStructDefTemplate, doc, r.Name(), r.structFields())
+	return fmt.Sprintf(recordStructDefTemplate, doc, r.Name(), r.structFields(jsonAnnotations))
 }
 
 func (r *RecordDefinition) serializerMethodDef() string {
@@ -176,10 +180,10 @@ func (r *RecordDefinition) schemaMethodDef() (string, error) {
 	return fmt.Sprintf(recordSchemaTemplate, r.GoType(), strconv.Quote(string(schemaJson))), nil
 }
 
-func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) error {
+func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool, jsonAnnotations bool) error {
 	// Import guard, to avoid circular dependencies
 	if !p.HasStruct(r.filename(), r.GoType()) {
-		p.AddStruct(r.filename(), r.GoType(), r.structDefinition())
+		p.AddStruct(r.filename(), r.GoType(), r.structDefinition(jsonAnnotations))
 		schemaDef, err := r.schemaMethodDef()
 		if err != nil {
 			return err
@@ -198,7 +202,7 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool) erro
 
 		p.AddFunction(r.filename(), r.GoType(), r.ConstructorMethod(), constructorMethodDef)
 		for _, f := range r.fields {
-			f.Type().AddStruct(p, containers)
+			f.Type().AddStruct(p, containers, jsonAnnotations)
 		}
 	}
 	return nil
