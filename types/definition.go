@@ -21,7 +21,7 @@ type Definition interface {
 	DeserializerMethod() string
 
 	// Add the imports and struct for the definition of this type to the generator.Package
-	AddStruct(*generator.Package, bool) error
+	AddStruct(*generator.Package, bool, bool) error
 	AddSerializer(*generator.Package)
 	AddDeserializer(*generator.Package)
 

@@ -45,14 +45,14 @@ func NewNamespace(shortUnions bool) *Namespace {
 	}
 }
 
-func (namespace *Namespace) AddToPackage(p *generator.Package, headerComment string, containers bool) error {
+func (namespace *Namespace) AddToPackage(p *generator.Package, headerComment string, containers bool, jsonAnnotations bool) error {
 	for _, schema := range namespace.Schemas {
 		err := schema.Root.ResolveReferences(namespace)
 		if err != nil {
 			return err
 		}
 
-		schema.Root.AddStruct(p, containers)
+		schema.Root.AddStruct(p, containers, jsonAnnotations)
 		schema.Root.AddSerializer(p)
 		schema.Root.AddDeserializer(p)
 	}
