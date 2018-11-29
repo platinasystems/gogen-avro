@@ -14,6 +14,11 @@ type %v struct {
 }
 `
 
+const recordSetterTemplate = `func (r %v) Set%v(%v %v) {
+  r.%v=%v
+}
+`
+
 const recordSchemaTemplate = `func (r %v) Schema() string {
  return %v
 }
@@ -99,7 +104,7 @@ func (r *RecordDefinition) structFields(jsonAnnotations bool) string {
 		}
 		var annotations = ""
 		if jsonAnnotations {
-			annotations = "`json:" + f.avroName + "`"
+			annotations = "`json:\"" + f.avroName + "\"`"
 		}
 		fieldDefinitions += fmt.Sprintf("%v %v %v\n", f.GoName(), f.Type().GoType(), annotations)
 	}
@@ -180,6 +185,10 @@ func (r *RecordDefinition) schemaMethodDef() (string, error) {
 	return fmt.Sprintf(recordSchemaTemplate, r.GoType(), strconv.Quote(string(schemaJson))), nil
 }
 
+func (r *RecordDefinition) setterMethodDef(f Field) (string, error) {
+	return fmt.Sprintf(recordSetterTemplate, r.GoType(), f.GoName(), f.Name(), f.Type().GoType(), f.GoName(), f.Name()), nil
+}
+
 func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool, jsonAnnotations bool) error {
 	// Import guard, to avoid circular dependencies
 	if !p.HasStruct(r.filename(), r.GoType()) {
@@ -202,6 +211,11 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool, json
 
 		p.AddFunction(r.filename(), r.GoType(), r.ConstructorMethod(), constructorMethodDef)
 		for _, f := range r.fields {
+			fieldSetterDef, err := r.setterMethodDef(*f)
+			if err != nil {
+				return err
+			}
+			p.AddFunction(r.filename(), r.GoType(), "Set"+f.GoName(), fieldSetterDef)
 			f.Type().AddStruct(p, containers, jsonAnnotations)
 		}
 	}
