@@ -7,7 +7,7 @@
 package avro
 
 import (
-	"github.com/actgardner/gogen-avro/container"
+	"github.com/gregorycallea/gogen-avro/container"
 	"io"
 )
 

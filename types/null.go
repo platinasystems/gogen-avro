@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/actgardner/gogen-avro/generator"
+	"github.com/gregorycallea/gogen-avro/generator"
 )
 
 const writeNullMethod = `

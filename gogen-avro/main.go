@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/actgardner/gogen-avro/generator"
-	"github.com/actgardner/gogen-avro/types"
+	"github.com/gregorycallea/gogen-avro/generator"
+	"github.com/gregorycallea/gogen-avro/types"
 )
 
 func main() {
