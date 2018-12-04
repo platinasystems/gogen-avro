@@ -14,6 +14,11 @@ type %v struct {
 }
 `
 
+const recordGetterTemplate = `func (r %v) Get%v() %v{
+  return r.%v
+}
+`
+
 const recordSetterTemplate = `func (r %v) Set%v(%v %v) {
   r.%v=%v
 }
@@ -189,6 +194,10 @@ func (r *RecordDefinition) setterMethodDef(f Field) (string, error) {
 	return fmt.Sprintf(recordSetterTemplate, r.GoType(), f.GoName(), f.Name(), f.Type().GoType(), f.GoName(), f.Name()), nil
 }
 
+func (r *RecordDefinition) getterMethodDef(f Field) (string, error) {
+	return fmt.Sprintf(recordGetterTemplate, r.GoType(), f.GoName(), f.Type().GoType(), f.GoName()), nil
+}
+
 func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool, jsonAnnotations bool) error {
 	// Import guard, to avoid circular dependencies
 	if !p.HasStruct(r.filename(), r.GoType()) {
@@ -216,6 +225,13 @@ func (r *RecordDefinition) AddStruct(p *generator.Package, containers bool, json
 				return err
 			}
 			p.AddFunction(r.filename(), r.GoType(), "Set"+f.GoName(), fieldSetterDef)
+
+			fieldGetterDef, err := r.getterMethodDef(*f)
+			if err != nil {
+				return err
+			}
+			p.AddFunction(r.filename(), r.GoType(), "Get"+f.GoName(), fieldGetterDef)
+
 			f.Type().AddStruct(p, containers, jsonAnnotations)
 		}
 	}
