@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/actgardner/gogen-avro/generator"
+	"github.com/platinasystems/gogen-avro/generator"
 )
 
 type AvroType interface {

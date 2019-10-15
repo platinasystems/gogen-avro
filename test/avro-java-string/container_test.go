@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/actgardner/gogen-avro/container"
 	"github.com/linkedin/goavro"
+	"github.com/platinasystems/gogen-avro/container"
 )
 
 func TestNullEncoding(t *testing.T) {
