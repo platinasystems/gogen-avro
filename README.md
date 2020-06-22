@@ -1,4 +1,4 @@
-gogen-avro
+gogen-avro (DEPRECATED)
 ===
 
 [![Build Status](https://travis-ci.org/platinasystems/gogen-avro.svg?branch=master)](https://travis-ci.org/platinasystems/gogen-avro)
